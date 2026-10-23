@@ -1,0 +1,38 @@
+# Dependencies
+node_modules/
+.pnpm-debug.log*
+.npmrc
+
+# Build outputs & Wrangler local state
+dist/
+build/
+.wrangler/
+.env
+.env.*
+!.env.example
+
+# Logs & temp files
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE / Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-workspace
+*.sublime-project
