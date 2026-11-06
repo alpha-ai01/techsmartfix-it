@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IT Tech Community Forum</title>
+    <title>IT Tech Community Forum - Firebase</title>
     <!-- AdSense Head -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-0000000000000000" crossorigin="anonymous"></script>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -18,9 +18,9 @@
     <nav class="bg-white shadow-sm p-4 sticky top-0 z-50">
         <div class="container mx-auto flex justify-between items-center">
             <h1 class="text-2xl font-bold text-blue-600"><i class="fas fa-laptop-code"></i> IT Forum</h1>
-            <div class="flex items-center space-x-4">
-                <span id="auth-label" class="text-sm font-semibold text-gray-600">Status: Guest</span>
-                <button onclick="toggleAuth()" class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600">Toggle Auth Status</button>
+            <div id="auth-container" class="flex items-center space-x-4">
+                <!-- Auth buttons injected by JS -->
+                <button id="login-btn" class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600">Sign In with Google</button>
             </div>
         </div>
     </nav>
@@ -34,83 +34,104 @@
     <!-- Main Content -->
     <main class="container mx-auto mt-6 grid grid-cols-1 md:grid-cols-4 gap-6">
         <div class="md:col-span-3 space-y-6">
-            
-            <!-- Thread Feed -->
             <div id="thread-feed" class="space-y-4">
-                <!-- Example Thread Card -->
-                <div class="bg-white p-5 rounded-lg shadow">
-                    <div class="flex items-center space-x-3 mb-4">
-                        <img src="https://ui-avatars.com/api/?name=Alex+Tech&background=0D8ABC&color=fff" class="w-12 h-12 rounded-full" alt="Avatar">
-                        <div>
-                            <p class="font-bold">Alex Tech</p>
-                            <p class="text-xs text-gray-500">2 hours ago</p>
-                        </div>
-                    </div>
-                    <h2 class="text-xl font-bold mb-2">My iPad Pro is stuck on boot loop, any suggestions?</h2>
-                    <p class="text-gray-700 mb-4">I've tried a hard reset and DFU mode, but it keeps rebooting. Has anyone experienced this with iPadOS 17?</p>
-                    
-                    <div class="flex items-center space-x-6 text-gray-500 border-t pt-4">
-                        <span class="flex items-center space-x-1"><i class="fas fa-eye"></i><span id="view-count">1.2k</span></span>
-                        <button onclick="handleAction('like')" class="flex items-center space-x-1 hover:text-blue-500"><i class="fas fa-thumbs-up"></i><span>Like</span></button>
-                        <button onclick="handleAction('comment')" class="flex items-center space-x-1 hover:text-green-500"><i class="fas fa-comment"></i><span>Comment</span></button>
-                        <button onclick="handleAction('react')" class="flex items-center space-x-1 hover:text-yellow-500"><i class="fas fa-smile"></i><span>React</span></button>
-                    </div>
-                </div>
-
-                <!-- In-feed Ad -->
-                <ins class="adsbygoogle ad-placeholder" style="display:block" data-ad-client="ca-pub-0000000000000000" data-ad-slot="0987654321"></ins>
-                <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+                <!-- Threads injected by JS -->
             </div>
+            <!-- In-feed Ad -->
+            <ins class="adsbygoogle ad-placeholder" style="display:block" data-ad-client="ca-pub-0000000000000000" data-ad-slot="0987654321"></ins>
+            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
         </div>
 
-        <!-- Sidebar -->
         <aside class="space-y-4">
             <div class="bg-white p-4 rounded-lg shadow">
                 <h3 class="font-bold mb-3 border-b pb-2">Categories</h3>
                 <ul class="text-sm space-y-2 text-gray-600">
                     <li><i class="fas fa-mobile-alt w-5"></i> iPhone / iPad</li>
                     <li><i class="fas fa-laptop w-5"></i> PC / Mac</li>
-                    <li><i class="fas fa-tablet-alt w-5"></i> Tablets</li>
                 </ul>
             </div>
         </aside>
     </main>
 
-    <!-- Auth Alert Modal (hidden by default) -->
+    <!-- Auth Alert Modal -->
     <div id="auth-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div class="bg-white p-6 rounded-lg shadow-lg text-center w-80">
             <h3 class="text-lg font-bold mb-4 text-red-600">Access Denied</h3>
-            <p class="text-sm text-gray-600 mb-4">You must verify your account (via Email or Phone number) to interact with the community.</p>
-            <button onclick="closeModal()" class="bg-gray-200 px-4 py-2 rounded text-sm">Close</button>
+            <p class="text-sm text-gray-600 mb-4">Please log in to interact with the community.</p>
+            <button onclick="document.getElementById('auth-modal').classList.add('hidden')" class="bg-gray-200 px-4 py-2 rounded text-sm">Close</button>
         </div>
     </div>
 
-    <script>
-        // State Management
-        const authState = { isAuthenticated: false, isVerified: false };
+    <script type="module">
+        // Firebase Setup
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+        import { getFirestore, collection, getDocs, doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
-        // Initial View Count Simulation
-        window.onload = () => {
-            const views = document.getElementById('view-count');
-            views.innerText = (parseFloat(views.innerText) + 0.1).toFixed(1) + 'k';
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const provider = new GoogleAuthProvider();
+
+        let currentUser = null;
+
+        // Auth Logic
+        onAuthStateChanged(auth, (user) => {
+            currentUser = user;
+            const authContainer = document.getElementById('auth-container');
+            if (user) {
+                authContainer.innerHTML = `<img src="${user.photoURL}" class="w-10 h-10 rounded-full" /><span>${user.displayName}</span><button id="logout-btn" class="text-sm text-red-500">Sign Out</button>`;
+                document.getElementById('logout-btn').onclick = () => signOut(auth);
+            } else {
+                authContainer.innerHTML = `<button id="login-btn" class="bg-blue-500 text-white px-3 py-1 rounded text-sm">Sign In</button>`;
+                document.getElementById('login-btn').onclick = () => signInWithPopup(auth, provider);
+            }
+            renderThreads();
+        });
+
+        // Database Logic
+        async function renderThreads() {
+            const feed = document.getElementById('thread-feed');
+            feed.innerHTML = 'Loading threads...';
+            const snapshot = await getDocs(collection(db, 'threads'));
+            feed.innerHTML = '';
+            snapshot.forEach(doc => {
+                const thread = doc.data();
+                const div = document.createElement('div');
+                div.className = 'bg-white p-5 rounded-lg shadow';
+                div.innerHTML = `
+                    <h2 class="text-xl font-bold mb-2">${thread.title}</h2>
+                    <p class="text-gray-700 mb-4">${thread.content}</p>
+                    <div class="flex items-center space-x-6 text-gray-500 border-t pt-4">
+                        <span><i class="fas fa-eye"></i> ${thread.viewCount}</span>
+                        <button onclick="handleAction('like', '${doc.id}')" class="hover:text-blue-500"><i class="fas fa-thumbs-up"></i></button>
+                    </div>
+                `;
+                feed.appendChild(div);
+                incrementViewCount(doc.id);
+            });
         }
 
-        function toggleAuth() {
-            authState.isVerified = !authState.isVerified;
-            authState.isAuthenticated = authState.isVerified;
-            document.getElementById('auth-label').innerText = 'Status: ' + (authState.isVerified ? 'Verified User' : 'Guest');
+        async function incrementViewCount(id) {
+            await updateDoc(doc(db, 'threads', id), { viewCount: increment(1) });
         }
 
-        function handleAction(action) {
-            if (!authState.isVerified) {
+        window.handleAction = async (action, id) => {
+            if (!currentUser) {
                 document.getElementById('auth-modal').classList.remove('hidden');
                 return;
             }
-            alert('Action success: ' + action);
-        }
-
-        function closeModal() {
-            document.getElementById('auth-modal').classList.add('hidden');
+            alert(action + ' successful for thread ' + id);
+            // Implement addLike/addEmoji using transaction here...
         }
     </script>
 </body>
