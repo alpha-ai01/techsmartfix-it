@@ -17,6 +17,7 @@
         <header class="bg-slate-900 text-white p-4 rounded-2xl shadow-lg text-center">
             <h1 class="text-xl font-bold tracking-wide">🛠️ Techsmartfix-IT</h1>
             <p class="text-xs text-slate-400 mt-1">ระบบบันทึกและแจ้งใบเสร็จงานซ่อม</p>
+            <p class="text-xs text-slate-300 mt-2" role="status">ข้อมูลจะถูกบันทึกไว้ในอุปกรณ์นี้</p>
         </header>
 
         <!-- 💳 Card 1: บันทึกงานซ่อมใหม่ -->
@@ -111,10 +112,14 @@
     </div>
 
     <!-- 📜 JavaScript คำสั่งประมวลผล (แทนการต่อบล็อก) -->
-    <script>
+    <script type="module">
         let html5QrcodeScanner = null;
 
-        // 1. ระบบบันทึกข้อมูล (ทำงานเหมือน TinyDB)
+        function normalizePhone(phone) {
+            return phone.replace(/\D/g, '');
+        }
+
+        // 1. บันทึกข้อมูลงานซ่อมไว้ในอุปกรณ์นี้
         function saveData() {
             const name = document.getElementById('txt_name').value.trim();
             const phone = document.getElementById('txt_phone').value.trim();
@@ -127,30 +132,54 @@
                 return;
             }
 
-            const dataArray = [name, model, issue, price];
-            localStorage.setItem(phone, JSON.stringify(dataArray));
-            alert('บันทึกข้อมูลเรียบร้อย!');
-        }
-
-        // 2. ระบบค้นหาข้อมูล
-        function searchData() {
-            const searchPhone = document.getElementById('txt_search_phone').value.trim();
-            const storedData = localStorage.getItem(searchPhone);
-
-            if (!storedData) {
-                alert('ไม่พบข้อมูลงานซ่อมเบอร์นี้');
-                document.getElementById('lbl_name').innerText = '-';
-                document.getElementById('lbl_model').innerText = '-';
-                document.getElementById('lbl_issue').innerText = '-';
-                document.getElementById('lbl_price').innerText = '-';
+            const phoneTag = normalizePhone(phone);
+            if (!phoneTag) {
+                alert('โปรดกรอกเบอร์โทรศัพท์ที่ถูกต้อง');
                 return;
             }
 
-            const [name, model, issue, price] = JSON.parse(storedData);
-            document.getElementById('lbl_name').innerText = name || '-';
-            document.getElementById('lbl_model').innerText = model || '-';
-            document.getElementById('lbl_issue').innerText = issue || '-';
-            document.getElementById('lbl_price').innerText = price ? `${price} บาท` : '-';
+            try {
+                localStorage.setItem(`repairJob:${phoneTag}`, JSON.stringify({
+                    name,
+                    phone: phoneTag,
+                    model,
+                    issue,
+                    price,
+                }));
+                alert('บันทึกข้อมูลเรียบร้อย!');
+            } catch (error) {
+                alert(`บันทึกข้อมูลไม่สำเร็จ: ${error.message}`);
+            }
+        }
+
+        // 2. ค้นหาข้อมูลงานซ่อมในอุปกรณ์นี้
+        function searchData() {
+            const searchPhone = normalizePhone(document.getElementById('txt_search_phone').value.trim());
+
+            if (!searchPhone) {
+                alert('โปรดกรอกเบอร์โทรศัพท์เพื่อค้นหา');
+                return;
+            }
+
+            try {
+                const storedData = localStorage.getItem(`repairJob:${searchPhone}`);
+                if (!storedData) {
+                    alert('ไม่พบข้อมูลงานซ่อมเบอร์นี้');
+                    document.getElementById('lbl_name').innerText = '-';
+                    document.getElementById('lbl_model').innerText = '-';
+                    document.getElementById('lbl_issue').innerText = '-';
+                    document.getElementById('lbl_price').innerText = '-';
+                    return;
+                }
+
+                const { name, model, issue, price } = JSON.parse(storedData);
+                document.getElementById('lbl_name').innerText = name || '-';
+                document.getElementById('lbl_model').innerText = model || '-';
+                document.getElementById('lbl_issue').innerText = issue || '-';
+                document.getElementById('lbl_price').innerText = price ? `${price} บาท` : '-';
+            } catch (error) {
+                alert(`ค้นหาข้อมูลไม่สำเร็จ: ${error.message}`);
+            }
         }
 
         // 3. ระบบส่งข้อมูลเข้า LINE
@@ -212,7 +241,13 @@
                 document.getElementById('scanner_modal').classList.add('hidden');
             }
         }
+
+        window.saveData = saveData;
+        window.searchData = searchData;
+        window.shareToLine = shareToLine;
+        window.clearForm = clearForm;
+        window.startScan = startScan;
+        window.stopScan = stopScan;
     </script>
 </body>
 </html>
-
