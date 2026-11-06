@@ -1,257 +1,117 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="google-adsense-account" content="ca-pub-3786655232838135">
-    <title>Techsmartfix-IT - ระบบจัดการงานซ่อม</title>
-    <!-- Tailwind CSS (ช่วยจัด UI ให้สวยทันสมัย) -->
+    <title>IT Tech Community Forum</title>
+    <!-- AdSense Head -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-0000000000000000" crossorigin="anonymous"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Library สำหรับสแกน บาร์โค้ด / QR Code -->
-    <script src="https://unpkg.com/html5-qrcode"></script>
-    <!-- Library สำหรับลิงค์ Google Adense Ads -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3786655232838135"
-     crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .ad-placeholder { background-color: #f3f4f6; border: 2px dashed #d1d5db; display: flex; align-items: center; justify-content: center; min-height: 120px; color: #6b7280; font-weight: bold; }
+    </style>
 </head>
-<body class="bg-slate-100 min-h-screen text-slate-800 font-sans p-4">
+<body class="bg-gray-100 text-gray-900">
 
-    <div class="max-w-md mx-auto space-y-4">
-
-        <!-- 🔹 Header Bar -->
-        <header class="bg-slate-900 text-white p-4 rounded-2xl shadow-lg text-center">
-            <h1 class="text-xl font-bold tracking-wide">🛠️ Techsmartfix-IT</h1>
-            <p class="text-xs text-slate-400 mt-1">ระบบบันทึกและแจ้งใบเสร็จงานซ่อม</p>
-            <p class="text-xs text-slate-300 mt-2" role="status">ข้อมูลจะถูกบันทึกไว้ในอุปกรณ์นี้</p>
-        </header>
-
-        <!-- 💳 Card 1: บันทึกงานซ่อมใหม่ -->
-        <div class="bg-white p-5 rounded-2xl shadow-md border border-slate-200/80 space-y-3">
-            <h2 class="text-md font-semibold text-slate-700 border-b pb-2">📝 บันทึกงานซ่อมใหม่</h2>
-
-            <div>
-                <label class="block text-xs font-medium text-slate-500 mb-1">ชื่อลูกค้า</label>
-                <input type="text" id="txt_name" placeholder="กรอกชื่อลูกค้า" 
-                    class="w-full px-3 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-sm">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm p-4 sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-blue-600"><i class="fas fa-laptop-code"></i> IT Forum</h1>
+            <div class="flex items-center space-x-4">
+                <span id="auth-label" class="text-sm font-semibold text-gray-600">Status: Guest</span>
+                <button onclick="toggleAuth()" class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600">Toggle Auth Status</button>
             </div>
+        </div>
+    </nav>
 
-            <div>
-                <label class="block text-xs font-medium text-slate-500 mb-1">เบอร์โทรศัพท์ (ใช้เป็น Tag)</label>
-                <input type="tel" id="txt_phone" placeholder="08XXXXXXXX" 
-                    class="w-full px-3 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-sm">
-            </div>
+    <!-- Ad Banner -->
+    <div class="container mx-auto mt-4">
+        <ins class="adsbygoogle ad-placeholder" style="display:block" data-ad-client="ca-pub-0000000000000000" data-ad-slot="1234567890"></ins>
+        <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    </div>
 
-            <div>
-                <label class="block text-xs font-medium text-slate-500 mb-1">รุ่นโทรศัพท์ / เลข IMEI</label>
-                <div class="flex gap-2">
-                    <input type="text" id="txt_model" placeholder="กรอกรุ่น หรือสแกน IMEI" 
-                        class="w-full px-3 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-sm">
-                    <button onclick="startScan()" 
-                        class="bg-slate-800 text-white px-3 py-2 rounded-xl text-xs font-medium hover:bg-slate-700 transition flex items-center gap-1 whitespace-nowrap">
-                        📷 สแกน
-                    </button>
+    <!-- Main Content -->
+    <main class="container mx-auto mt-6 grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div class="md:col-span-3 space-y-6">
+            
+            <!-- Thread Feed -->
+            <div id="thread-feed" class="space-y-4">
+                <!-- Example Thread Card -->
+                <div class="bg-white p-5 rounded-lg shadow">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <img src="https://ui-avatars.com/api/?name=Alex+Tech&background=0D8ABC&color=fff" class="w-12 h-12 rounded-full" alt="Avatar">
+                        <div>
+                            <p class="font-bold">Alex Tech</p>
+                            <p class="text-xs text-gray-500">2 hours ago</p>
+                        </div>
+                    </div>
+                    <h2 class="text-xl font-bold mb-2">My iPad Pro is stuck on boot loop, any suggestions?</h2>
+                    <p class="text-gray-700 mb-4">I've tried a hard reset and DFU mode, but it keeps rebooting. Has anyone experienced this with iPadOS 17?</p>
+                    
+                    <div class="flex items-center space-x-6 text-gray-500 border-t pt-4">
+                        <span class="flex items-center space-x-1"><i class="fas fa-eye"></i><span id="view-count">1.2k</span></span>
+                        <button onclick="handleAction('like')" class="flex items-center space-x-1 hover:text-blue-500"><i class="fas fa-thumbs-up"></i><span>Like</span></button>
+                        <button onclick="handleAction('comment')" class="flex items-center space-x-1 hover:text-green-500"><i class="fas fa-comment"></i><span>Comment</span></button>
+                        <button onclick="handleAction('react')" class="flex items-center space-x-1 hover:text-yellow-500"><i class="fas fa-smile"></i><span>React</span></button>
+                    </div>
                 </div>
-            </div>
 
-            <div>
-                <label class="block text-xs font-medium text-slate-500 mb-1">อาการเสีย</label>
-                <input type="text" id="txt_issue" placeholder="ระบุอาการเสีย" 
-                    class="w-full px-3 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-sm">
-            </div>
-
-            <div>
-                <label class="block text-xs font-medium text-slate-500 mb-1">ราคาประเมิน (บาท)</label>
-                <input type="number" id="txt_price" placeholder="0.00" 
-                    class="w-full px-3 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-sm">
-            </div>
-
-            <button onclick="saveData()" 
-                class="w-full bg-blue-600 text-white font-semibold py-2.5 rounded-xl text-sm hover:bg-blue-700 transition shadow-sm mt-2">
-                💾 บันทึกข้อมูล
-            </button>
-        </div>
-
-        <!-- 💳 Card 2: ค้นหางานซ่อม -->
-        <div class="bg-white p-5 rounded-2xl shadow-md border border-slate-200/80 space-y-3">
-            <h2 class="text-md font-semibold text-slate-700 border-b pb-2">🔍 ค้นหาข้อมูลงานซ่อม</h2>
-
-            <div class="flex gap-2">
-                <input type="tel" id="txt_search_phone" placeholder="กรอกเบอร์โทรเพื่อค้นหา..." 
-                    class="w-full px-3 py-2 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm">
-                <button onclick="searchData()" 
-                    class="bg-indigo-600 text-white px-4 py-2 rounded-xl text-xs font-semibold hover:bg-indigo-700 transition">
-                    ค้นหา
-                </button>
-            </div>
-
-            <!-- แสดงผลข้อมูลงานซ่อม -->
-            <div class="bg-slate-50 p-3 rounded-xl border space-y-1.5 text-xs text-slate-600 mt-2">
-                <p><strong>👤 ชื่อลูกค้า:</strong> <span id="lbl_name" class="text-slate-800">-</span></p>
-                <p><strong>📱 รุ่น/IMEI:</strong> <span id="lbl_model" class="text-slate-800">-</span></p>
-                <p><strong>🛠️ อาการเสีย:</strong> <span id="lbl_issue" class="text-slate-800">-</span></p>
-                <p><strong>💵 ราคาซ่อม:</strong> <span id="lbl_price" class="text-slate-800">-</span></p>
+                <!-- In-feed Ad -->
+                <ins class="adsbygoogle ad-placeholder" style="display:block" data-ad-client="ca-pub-0000000000000000" data-ad-slot="0987654321"></ins>
+                <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
             </div>
         </div>
 
-        <!-- 🟢 ปุ่มการทำงานล่างสุด -->
-        <div class="grid grid-cols-2 gap-3">
-            <button onclick="shareToLine()" 
-                class="bg-emerald-500 text-white font-semibold py-2.5 rounded-xl text-xs hover:bg-emerald-600 transition text-center shadow-sm flex items-center justify-center gap-1">
-                📲 ส่งเข้า LINE
-            </button>
-            <button onclick="clearForm()" 
-                class="bg-slate-500 text-white font-semibold py-2.5 rounded-xl text-xs hover:bg-slate-600 transition text-center shadow-sm flex items-center justify-center gap-1">
-                🔄 ล้างข้อมูล
-            </button>
-        </div>
+        <!-- Sidebar -->
+        <aside class="space-y-4">
+            <div class="bg-white p-4 rounded-lg shadow">
+                <h3 class="font-bold mb-3 border-b pb-2">Categories</h3>
+                <ul class="text-sm space-y-2 text-gray-600">
+                    <li><i class="fas fa-mobile-alt w-5"></i> iPhone / iPad</li>
+                    <li><i class="fas fa-laptop w-5"></i> PC / Mac</li>
+                    <li><i class="fas fa-tablet-alt w-5"></i> Tablets</li>
+                </ul>
+            </div>
+        </aside>
+    </main>
 
-    </div>
-
-    <!-- Modal สำหรับกล้องสแกนบาร์โค้ด -->
-    <div id="scanner_modal" class="fixed inset-0 bg-black/70 hidden flex-col items-center justify-center p-4 z-50">
-        <div class="bg-white p-4 rounded-2xl w-full max-w-sm space-y-3">
-            <h3 class="text-sm font-bold text-slate-700 text-center">สแกนบาร์โค้ด / IMEI</h3>
-            <div id="reader" class="w-full overflow-hidden rounded-xl"></div>
-            <button onclick="stopScan()" class="w-full bg-red-500 text-white py-2 rounded-xl text-xs font-medium">ปิดกล้อง</button>
+    <!-- Auth Alert Modal (hidden by default) -->
+    <div id="auth-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white p-6 rounded-lg shadow-lg text-center w-80">
+            <h3 class="text-lg font-bold mb-4 text-red-600">Access Denied</h3>
+            <p class="text-sm text-gray-600 mb-4">You must verify your account (via Email or Phone number) to interact with the community.</p>
+            <button onclick="closeModal()" class="bg-gray-200 px-4 py-2 rounded text-sm">Close</button>
         </div>
     </div>
 
-    <!-- 📜 JavaScript คำสั่งประมวลผล (แทนการต่อบล็อก) -->
-    <script type="module">
-        let html5QrcodeScanner = null;
+    <script>
+        // State Management
+        const authState = { isAuthenticated: false, isVerified: false };
 
-        function normalizePhone(phone) {
-            return phone.replace(/\D/g, '');
+        // Initial View Count Simulation
+        window.onload = () => {
+            const views = document.getElementById('view-count');
+            views.innerText = (parseFloat(views.innerText) + 0.1).toFixed(1) + 'k';
         }
 
-        // 1. บันทึกข้อมูลงานซ่อมไว้ในอุปกรณ์นี้
-        function saveData() {
-            const name = document.getElementById('txt_name').value.trim();
-            const phone = document.getElementById('txt_phone').value.trim();
-            const model = document.getElementById('txt_model').value.trim();
-            const issue = document.getElementById('txt_issue').value.trim();
-            const price = document.getElementById('txt_price').value.trim();
+        function toggleAuth() {
+            authState.isVerified = !authState.isVerified;
+            authState.isAuthenticated = authState.isVerified;
+            document.getElementById('auth-label').innerText = 'Status: ' + (authState.isVerified ? 'Verified User' : 'Guest');
+        }
 
-            if (!phone) {
-                alert('โปรดกรอกเบอร์โทรศัพท์เพื่อใช้เป็น Tag ในการบันทึก');
+        function handleAction(action) {
+            if (!authState.isVerified) {
+                document.getElementById('auth-modal').classList.remove('hidden');
                 return;
             }
-
-            const phoneTag = normalizePhone(phone);
-            if (!phoneTag) {
-                alert('โปรดกรอกเบอร์โทรศัพท์ที่ถูกต้อง');
-                return;
-            }
-
-            try {
-                localStorage.setItem(`repairJob:${phoneTag}`, JSON.stringify({
-                    name,
-                    phone: phoneTag,
-                    model,
-                    issue,
-                    price,
-                }));
-                alert('บันทึกข้อมูลเรียบร้อย!');
-            } catch (error) {
-                alert(`บันทึกข้อมูลไม่สำเร็จ: ${error.message}`);
-            }
+            alert('Action success: ' + action);
         }
 
-        // 2. ค้นหาข้อมูลงานซ่อมในอุปกรณ์นี้
-        function searchData() {
-            const searchPhone = normalizePhone(document.getElementById('txt_search_phone').value.trim());
-
-            if (!searchPhone) {
-                alert('โปรดกรอกเบอร์โทรศัพท์เพื่อค้นหา');
-                return;
-            }
-
-            try {
-                const storedData = localStorage.getItem(`repairJob:${searchPhone}`);
-                if (!storedData) {
-                    alert('ไม่พบข้อมูลงานซ่อมเบอร์นี้');
-                    document.getElementById('lbl_name').innerText = '-';
-                    document.getElementById('lbl_model').innerText = '-';
-                    document.getElementById('lbl_issue').innerText = '-';
-                    document.getElementById('lbl_price').innerText = '-';
-                    return;
-                }
-
-                const { name, model, issue, price } = JSON.parse(storedData);
-                document.getElementById('lbl_name').innerText = name || '-';
-                document.getElementById('lbl_model').innerText = model || '-';
-                document.getElementById('lbl_issue').innerText = issue || '-';
-                document.getElementById('lbl_price').innerText = price ? `${price} บาท` : '-';
-            } catch (error) {
-                alert(`ค้นหาข้อมูลไม่สำเร็จ: ${error.message}`);
-            }
+        function closeModal() {
+            document.getElementById('auth-modal').classList.add('hidden');
         }
-
-        // 3. ระบบส่งข้อมูลเข้า LINE
-        function shareToLine() {
-            const name = document.getElementById('lbl_name').innerText;
-            const model = document.getElementById('lbl_model').innerText;
-            const issue = document.getElementById('lbl_issue').innerText;
-            const price = document.getElementById('lbl_price').innerText;
-
-            if (name === '-') {
-                alert('โปรดค้นหาข้อมูลงานซ่อมก่อนกดส่ง LINE');
-                return;
-            }
-
-            const message = `🧾 ใบเสร็จแจ้งงานซ่อม\n👤 ชื่อลูกค้า: ${name}\n📱 รุ่น/IMEI: ${model}\n🛠️ อาการเสีย: ${issue}\n💵 ราคาซ่อม: ${price}`;
-            const lineUrl = `https://line.me/R/msg/text/?${encodeURIComponent(message)}`;
-            window.open(lineUrl, '_blank');
-        }
-
-        // 4. ระบบล้างข้อมูลบนหน้าจอ
-        function clearForm() {
-            document.getElementById('txt_name').value = '';
-            document.getElementById('txt_phone').value = '';
-            document.getElementById('txt_model').value = '';
-            document.getElementById('txt_issue').value = '';
-            document.getElementById('txt_price').value = '';
-            document.getElementById('txt_search_phone').value = '';
-
-            document.getElementById('lbl_name').innerText = '-';
-            document.getElementById('lbl_model').innerText = '-';
-            document.getElementById('lbl_issue').innerText = '-';
-            document.getElementById('lbl_price').innerText = '-';
-        }
-
-        // 5. ระบบเปิดกล้องสแกนบาร์โค้ด
-        function startScan() {
-            document.getElementById('scanner_modal').classList.remove('hidden');
-            document.getElementById('scanner_modal').classList.add('flex');
-
-            html5QrcodeScanner = new Html5Qrcode("reader");
-            html5QrcodeScanner.start(
-                { facingMode: "environment" },
-                { fps: 10, qrbox: { width: 250, height: 150 } },
-                (decodedText) => {
-                    document.getElementById('txt_model').value = decodedText;
-                    stopScan();
-                },
-                () => {}
-            );
-        }
-
-        function stopScan() {
-            if (html5QrcodeScanner) {
-                html5QrcodeScanner.stop().then(() => {
-                    document.getElementById('scanner_modal').classList.add('hidden');
-                    document.getElementById('scanner_modal').classList.remove('flex');
-                });
-            } else {
-                document.getElementById('scanner_modal').classList.add('hidden');
-            }
-        }
-
-        window.saveData = saveData;
-        window.searchData = searchData;
-        window.shareToLine = shareToLine;
-        window.clearForm = clearForm;
-        window.startScan = startScan;
-        window.stopScan = stopScan;
     </script>
 </body>
 </html>
