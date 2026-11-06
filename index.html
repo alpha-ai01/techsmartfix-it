@@ -1,85 +1,251 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="th" class="light">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>IT Community Forum</title>
-    <link rel="manifest" href="/manifest.json">
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-0000000000000000" crossorigin="anonymous"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ITBoard - ชุมชนถามตอบปัญหาไอที</title>
+    
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        tailwind.config = { darkMode: 'class' };
-        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
+        tailwind.config = {
+            darkMode: 'class',
+            theme: { extend: { fontFamily: { sans: ['Prompt', 'sans-serif'] } } }
         }
     </script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Google AdSense (เปลี่ยน YOUR_CLIENT_ID เป็นของจริง) -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-YOUR_CLIENT_ID" crossorigin="anonymous"></script>
+
     <style>
-        .glass { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); }
-        .dark .glass { background: rgba(30, 41, 59, 0.7); }
-        .ad-placeholder { min-height: 120px; }
+        body { font-family: 'Prompt', sans-serif; }
+        /* ซ่อน Scrollbar แต่ยังเลื่อนได้ */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 transition-colors duration-300">
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 transition-colors duration-300 pb-safe pt-safe">
 
-    <nav class="sticky top-0 z-50 glass border-b border-slate-200 dark:border-slate-800">
-        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
-            <h1 class="text-2xl font-bold text-blue-600">ITBoard</h1>
-            <div class="flex items-center space-x-3">
-                <button id="install-btn" class="hidden text-xs bg-green-600 text-white px-3 py-1 rounded">Install App</button>
-                <button onclick="toggleTheme()" class="p-2 rounded-lg bg-slate-200 dark:bg-slate-800"><i class="fas fa-sun dark:hidden"></i><i class="fas fa-moon hidden dark:block"></i></button>
-                <div id="auth-container"></div>
+    <!-- Navbar -->
+    <nav class="sticky top-0 z-50 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md border-b border-gray-200 dark:border-slate-700 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <button id="mobile-menu-btn" class="md:hidden text-2xl text-blue-600 dark:text-blue-400">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <a href="#" class="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                    <i class="fas fa-microchip mr-2"></i>ITBoard
+                </a>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-slate-700 transition">
+                    <i class="fas fa-moon text-xl" id="theme-icon"></i>
+                </button>
+                <div id="auth-container">
+                    <!-- ปุ่มนี้จะเปลี่ยนเป็นรูปโปรไฟล์เมื่อ Login -->
+                    <button id="login-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-full font-medium transition shadow-md">
+                        เข้าสู่ระบบ
+                    </button>
+                </div>
             </div>
         </div>
     </nav>
 
-    <main class="max-w-7xl mx-auto px-4 py-6 grid md:grid-cols-12 gap-8">
-        <section class="md:col-span-8 space-y-6">
-            <div id="thread-feed" class="space-y-4"></div>
-            <button id="load-more" class="w-full p-3 bg-slate-200 dark:bg-slate-800 rounded-xl">Load More</button>
-        </section>
-        <aside class="hidden md:block md:col-span-4 sticky top-24 h-screen">
-             <ins class="adsbygoogle ad-placeholder" style="display:block" data-ad-client="ca-pub-0000000000000000" data-ad-slot="9998887776"></ins>
-        </aside>
-    </main>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
-        import { getFirestore, collection, query, orderBy, limit, startAfter, getDocs, doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
-        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-storage.js";
-
-        // ... Firebase Config and initialization ...
-        const firebaseConfig = { /* ... */ };
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const storage = getStorage(app);
+    <!-- Main Layout: 3 Columns -->
+    <div class="max-w-7xl mx-auto px-4 pt-6 pb-20 flex flex-col md:flex-row gap-6">
         
-        // ... Logic for authState, pagination, storage uploads ...
+        <!-- Left Sidebar (Menu) -->
+        <aside class="hidden md:block w-64 flex-shrink-0">
+            <div class="sticky top-24 bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-slate-700">
+                <ul class="space-y-2">
+                    <li><a href="#" class="flex items-center gap-3 px-4 py-3 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl font-medium"><i class="fas fa-home w-5"></i> หน้าแรก</a></li>
+                    <li><a href="#" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-slate-700 rounded-xl transition"><i class="fas fa-mobile-alt w-5"></i> สมาร์ทโฟน / แท็บเล็ต</a></li>
+                    <li><a href="#" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-slate-700 rounded-xl transition"><i class="fas fa-laptop w-5"></i> คอมพิวเตอร์ / PC</a></li>
+                    <li><a href="#" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-slate-700 rounded-xl transition"><i class="fas fa-apple w-5"></i> Apple (iOS/Mac)</a></li>
+                </ul>
+            </div>
+        </aside>
 
-        // PWA Install Prompt
-        let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            document.getElementById('install-btn').classList.remove('hidden');
+        <!-- Center Column (Main Feed) -->
+        <main class="flex-1 w-full min-w-0">
+            
+            <!-- AdSense: Leaderboard (Responsive) -->
+            <div class="mb-6 bg-gray-100 dark:bg-slate-800 rounded-2xl flex items-center justify-center min-h-[100px] overflow-hidden">
+                <ins class="adsbygoogle block w-full text-center"
+                     data-ad-client="ca-pub-YOUR_CLIENT_ID"
+                     data-ad-slot="YOUR_SLOT_ID"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+            </div>
+
+            <!-- Create Thread Box (แสดงผลทันที ไม่ต้องรอ JS) -->
+            <div class="bg-white dark:bg-slate-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-slate-700 mb-6">
+                <div class="flex gap-4">
+                    <img src="https://ui-avatars.com/api/?name=Guest&background=random" id="current-user-avatar" class="w-12 h-12 rounded-full object-cover shadow-sm">
+                    <div class="flex-1">
+                        <textarea id="thread-input" rows="2" placeholder="สอบถามปัญหา หรือแบ่งปันเทคนิคไอที..." class="w-full bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none transition"></textarea>
+                        <div class="flex justify-between items-center mt-3">
+                            <button class="text-gray-500 dark:text-gray-400 hover:text-blue-600 transition" onclick="requireAuth()"><i class="fas fa-image text-xl"></i></button>
+                            <button onclick="requireAuth()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full font-medium transition shadow-md">โพสต์</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Threads Feed Container -->
+            <div id="thread-feed" class="space-y-6">
+                <!-- Hardcoded ตัวอย่างกระทู้ ป้องกันหน้าจอว่างเปล่า -->
+                <article class="bg-white dark:bg-slate-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-slate-700 hover:shadow-md transition">
+                    <div class="flex items-center gap-3 mb-4">
+                        <img src="https://ui-avatars.com/api/?name=Admin&background=0D8ABC&color=fff" class="w-10 h-10 rounded-full">
+                        <div>
+                            <h4 class="font-semibold text-sm">ผู้ดูแลระบบ (Admin)</h4>
+                            <p class="text-xs text-gray-500">เพิ่งโพสต์ • 👁️ ยอดวิว 1.2k</p>
+                        </div>
+                    </div>
+                    <h2 class="text-lg font-bold mb-2">ยินดีต้อนรับสู่ ITBoard! สอบถามปัญหาเทคโนโลยีได้ที่นี่</h2>
+                    <p class="text-gray-600 dark:text-gray-300 text-sm mb-4">พื้นที่สำหรับแลกเปลี่ยนความรู้ iPhone, Android, PC และอุปกรณ์ไอทีทุกชนิด หากท่านเป็นผู้ชมทั่วไป สามารถอ่านได้ปกติ แต่ถ้าต้องการคอมเมนต์หรือกดไลค์ กรุณาเข้าสู่ระบบนะครับ!</p>
+                    
+                    <div class="flex items-center gap-6 border-t border-gray-100 dark:border-slate-700 pt-3">
+                        <button onclick="requireAuth()" class="text-gray-500 hover:text-blue-600 flex items-center gap-2 text-sm transition"><i class="far fa-thumbs-up"></i> 142</button>
+                        <button onclick="requireAuth()" class="text-gray-500 hover:text-blue-600 flex items-center gap-2 text-sm transition"><i class="far fa-comment"></i> 23</button>
+                        <div class="flex gap-2">
+                            <button onclick="requireAuth()" class="hover:scale-110 transition">🔥 12</button>
+                            <button onclick="requireAuth()" class="hover:scale-110 transition">💡 5</button>
+                        </div>
+                    </div>
+                </article>
+            </div>
+            
+            <div class="mt-6 text-center">
+                <button id="load-more-btn" class="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 px-6 py-2 rounded-full font-medium hover:bg-gray-50 dark:hover:bg-slate-700 transition shadow-sm">
+                    โหลดเพิ่มเติม
+                </button>
+            </div>
+        </main>
+
+        <!-- Right Sidebar (Ads & Trending) -->
+        <aside class="hidden lg:block w-72 flex-shrink-0">
+            <div class="sticky top-24 space-y-6">
+                <!-- Trending Widget -->
+                <div class="bg-white dark:bg-slate-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-slate-700">
+                    <h3 class="font-bold mb-4 border-b border-gray-100 dark:border-slate-700 pb-2"><i class="fas fa-fire text-red-500 mr-2"></i> กระทู้ฮิต</h3>
+                    <ul class="space-y-3 text-sm">
+                        <li><a href="#" class="hover:text-blue-600 transition line-clamp-2">วิธีแก้ปัญหา iPhone แบตไหลหลังอัปเดต iOS ล่าสุด</a></li>
+                        <li><a href="#" class="hover:text-blue-600 transition line-clamp-2">จัดสเปคคอมทำงาน งบ 20,000 บาท ปี 2026</a></li>
+                        <li><a href="#" class="hover:text-blue-600 transition line-clamp-2">รีวิว Cloudflare Pages โฮสต์ฟรีสุดแรง</a></li>
+                    </ul>
+                </div>
+
+                <!-- AdSense: Skyscraper (Sticky) -->
+                <div class="bg-gray-100 dark:bg-slate-800 rounded-2xl flex items-center justify-center min-h-[250px] overflow-hidden">
+                    <ins class="adsbygoogle block w-full h-[250px]"
+                         data-ad-client="ca-pub-YOUR_CLIENT_ID"
+                         data-ad-slot="YOUR_SLOT_ID"></ins>
+                    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Alert Modal (โชว์เมื่อ Guest พยายามกดไลค์/คอมเมนต์) -->
+    <div id="auth-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden z-[100] flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-sm w-full p-6 shadow-2xl text-center transform scale-95 transition-transform duration-300" id="modal-content">
+            <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">
+                <i class="fas fa-lock"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-2">สิทธิ์การใช้งานจำกัด</h3>
+            <p class="text-gray-600 dark:text-gray-300 text-sm mb-6">คุณต้องเข้าสู่ระบบและยืนยันตัวตนก่อน จึงจะสามารถตั้งกระทู้ คอมเมนต์ หรือกดถูกใจได้</p>
+            <div class="space-y-3">
+                <button class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-xl font-medium transition" onclick="closeModal()">เข้าสู่ระบบเดี๋ยวนี้</button>
+                <button class="w-full bg-gray-100 hover:bg-gray-200 dark:bg-slate-700 dark:hover:bg-slate-600 py-2 rounded-xl font-medium transition" onclick="closeModal()">ปิดหน้าต่าง</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // 1. ระบบโหมดมืด (Dark Mode Logic)
+        const html = document.documentElement;
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+        
+        // เช็คค่าที่เคยเซฟไว้
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            html.classList.add('dark');
+            themeIcon.classList.replace('fa-moon', 'fa-sun');
+        } else {
+            html.classList.remove('dark');
+        }
+
+        themeToggle.addEventListener('click', () => {
+            html.classList.toggle('dark');
+            if (html.classList.contains('dark')) {
+                localStorage.theme = 'dark';
+                themeIcon.classList.replace('fa-moon', 'fa-sun');
+            } else {
+                localStorage.theme = 'light';
+                themeIcon.classList.replace('fa-sun', 'fa-moon');
+            }
         });
 
-        document.getElementById('install-btn').addEventListener('click', () => {
-            deferredPrompt.prompt();
-        });
+        // 2. ระบบป้องกันผู้ใช้งานทั่วไป (Mock Auth Guard)
+        // สร้าง State จำลองไว้ก่อน เมื่อเชื่อมต่อ Firebase ของจริงให้มาอัปเดตตัวแปรนี้
+        let isVerified = false; 
 
-        // Register Service Worker
-        if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');
+        function requireAuth() {
+            if (!isVerified) {
+                const modal = document.getElementById('auth-modal');
+                const content = document.getElementById('modal-content');
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    content.classList.remove('scale-95');
+                    content.classList.add('scale-100');
+                }, 10);
+            }
+        }
 
-        // Theme Toggle
-        window.toggleTheme = () => {
-            document.documentElement.classList.toggle('dark');
-            localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+        function closeModal() {
+            const modal = document.getElementById('auth-modal');
+            const content = document.getElementById('modal-content');
+            content.classList.remove('scale-100');
+            content.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+    </script>
+
+    <!-- Firebase SDK (เตรียมไว้ให้คุณใส่ Config) -->
+    <script type="module">
+        // Import Firebase v12 Modules Here
+        // import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
+        // import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
+        // import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            // apiKey: "YOUR_API_KEY",
+            // authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            // projectId: "YOUR_PROJECT_ID",
         };
+
+        // หากใส่ Config แล้ว ค่อย Uncomment โค้ดด้านล่างเพื่อใช้งานจริง
+        try {
+            // const app = initializeApp(firebaseConfig);
+            // const auth = getAuth(app);
+            // const db = getFirestore(app);
+            console.log("Firebase UI Shell Ready. Insert keys to activate real data.");
+        } catch (error) {
+            console.error("Firebase Init Error:", error);
+        }
     </script>
 </body>
 </html>
