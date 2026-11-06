@@ -1,0 +1,31 @@
+mutation SeedData @transaction @auth(expr: "auth.token.admin == true") {
+  user_insertMany(data: [
+    {id: "00000000-0000-0000-0000-000000000001", username: "alice_dev", email: "alice@example.com", displayName: "Alice"},
+    {id: "00000000-0000-0000-0000-000000000002", username: "bob_coder", email: "bob@example.com", displayName: "Bob"},
+    {id: "00000000-0000-0000-0000-000000000003", username: "charlie_ux", email: "charlie@example.com", displayName: "Charlie"}
+  ])
+  tag_insertMany(data: [
+    {id: "11111111-1111-1111-1111-111111111111", name: "React", colorCode: "#61DAFB"},
+    {id: "11111111-1111-1111-1111-111111111112", name: "Node", colorCode: "#339933"},
+    {id: "11111111-1111-1111-1111-111111111113", name: "Firebase", colorCode: "#FFCA28"}
+  ])
+  project_insertMany(data: [
+    {id: "22222222-2222-2222-2222-222222222221", title: "Project Alpha", description: "First project", url: "https://a.com", userId: "00000000-0000-0000-0000-000000000001"},
+    {id: "22222222-2222-2222-2222-222222222222", title: "Project Beta", description: "Second project", url: "https://b.com", userId: "00000000-0000-0000-0000-000000000002"}
+  ])
+  post_insertMany(data: [
+    {id: "33333333-3333-3333-3333-333333333331", title: "Hello World", content: "My first post", status: "published", createdAt: "2023-10-01T10:00:00Z", userId: "00000000-0000-0000-0000-000000000001"},
+    {id: "33333333-3333-3333-3333-333333333332", title: "Data Connect Tips", content: "Great tool", status: "draft", createdAt: "2023-10-02T12:00:00Z", userId: "00000000-0000-0000-0000-000000000002"}
+  ])
+  projectTag_insertMany(data: [
+    {projectId: "22222222-2222-2222-2222-222222222221", tagId: "11111111-1111-1111-1111-111111111111"},
+    {projectId: "22222222-2222-2222-2222-222222222222", tagId: "11111111-1111-1111-1111-111111111113"}
+  ])
+  postTag_insertMany(data: [
+    {postId: "33333333-3333-3333-3333-333333333331", tagId: "11111111-1111-1111-1111-111111111112"}
+  ])
+  message_insertMany(data: [
+    {senderEmail: "user@test.com", content: "Check out my site", timestamp: "2023-10-05T09:00:00Z", userId: "00000000-0000-0000-0000-000000000001"},
+    {senderEmail: "guest@test.com", content: "Need help", timestamp: "2023-10-06T14:30:00Z", userId: "00000000-0000-0000-0000-000000000003"}
+  ])
+}

@@ -1,0 +1,51 @@
+type User @table {
+  username: String!
+  email: String!
+  displayName: String!
+  bio: String
+  avatarUrl: String
+  socialLinks: String
+}
+
+type Project @table {
+  title: String!
+  description: String!
+  url: String!
+  imageUrl: String
+  githubRepoUrl: String
+  techStack: [String]
+  user: User!
+}
+
+type Post @table {
+  title: String!
+  content: String!
+  status: String!
+  createdAt: Timestamp!
+  excerpt: String
+  coverImageUrl: String
+  user: User!
+}
+
+type Tag @table {
+  name: String!
+  colorCode: String
+}
+
+type Message @table {
+  senderEmail: String!
+  content: String!
+  timestamp: Timestamp!
+  isRead: Boolean
+  user: User!
+}
+
+type ProjectTag @table(key: ["project", "tag"]) {
+  project: Project!
+  tag: Tag!
+}
+
+type PostTag @table(key: ["post", "tag"]) {
+  post: Post!
+  tag: Tag!
+}

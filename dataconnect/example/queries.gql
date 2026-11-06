@@ -1,0 +1,128 @@
+mutation InsertUser @auth(level: USER) {
+  user_insert(data: {id_expr: "auth.uid", username: "newuser", email: "user@example.com", displayName: "New User"})
+}
+
+mutation UpdateUser @auth(level: USER) {
+  user_update(key: {id_expr: "auth.uid"}, data: {displayName: "Updated Name"})
+}
+
+mutation DeleteUser @auth(level: USER) {
+  user_delete(key: {id_expr: "auth.uid"})
+}
+
+query GetUser @auth(level: USER) {
+  user(key: {id_expr: "auth.uid"}) {
+    username
+    email
+    displayName
+  }
+}
+
+query ListUsers @auth(level: PUBLIC, insecureReason: "Public profiles are part of the platform's social feature.") {
+  users {
+    username
+    displayName
+  }
+}
+
+mutation InsertProject @auth(level: USER) {
+  project_insert(data: {title: "My Project", description: "Desc", url: "http://...", userId_expr: "auth.uid"})
+}
+
+mutation UpdateProject @auth(level: USER) {
+  project_update(key: {id: "00000000-0000-0000-0000-000000000000"}, data: {description: "Updated"})
+}
+
+mutation DeleteProject @auth(level: USER) {
+  project_delete(key: {id: "00000000-0000-0000-0000-000000000000"})
+}
+
+query GetProject @auth(level: PUBLIC, insecureReason: "Projects are public portfolio items.") {
+  project(id: "00000000-0000-0000-0000-000000000000") {
+    title
+    description
+  }
+}
+
+query ListProjects @auth(level: PUBLIC, insecureReason: "Projects are public portfolio items.") {
+  projects {
+    title
+    url
+  }
+}
+
+mutation InsertPost @auth(level: USER) {
+  post_insert(data: {title: "Hello", content: "World", status: "published", createdAt_time: {now: true}, userId_expr: "auth.uid"})
+}
+
+mutation UpdatePost @auth(level: USER) {
+  post_update(key: {id: "00000000-0000-0000-0000-000000000000"}, data: {title: "New Title"})
+}
+
+mutation DeletePost @auth(level: USER) {
+  post_delete(key: {id: "00000000-0000-0000-0000-000000000000"})
+}
+
+query GetPost @auth(level: PUBLIC, insecureReason: "Blog posts are public content.") {
+  post(id: "00000000-0000-0000-0000-000000000000") {
+    title
+    content
+  }
+}
+
+query ListPosts @auth(level: PUBLIC, insecureReason: "Blog posts are public content.") {
+  posts {
+    title
+    createdAt
+  }
+}
+
+mutation InsertTag @auth(level: USER, expr: "auth.token.admin == true") {
+  tag_insert(data: {name: "Tech"})
+}
+
+mutation UpdateTag @auth(level: USER, expr: "auth.token.admin == true") {
+  tag_update(key: {id: "00000000-0000-0000-0000-000000000000"}, data: {colorCode: "#FF0000"})
+}
+
+mutation DeleteTag @auth(level: USER, expr: "auth.token.admin == true") {
+  tag_delete(key: {id: "00000000-0000-0000-0000-000000000000"})
+}
+
+query GetTag @auth(level: PUBLIC, insecureReason: "Tags are public metadata.") {
+  tag(id: "00000000-0000-0000-0000-000000000000") {
+    name
+  }
+}
+
+query ListTags @auth(level: PUBLIC, insecureReason: "Tags are public metadata.") {
+  tags {
+    name
+  }
+}
+
+mutation InsertMessage @auth(level: USER) {
+  message_insert(data: {senderEmail: "me@me.com", content: "Hi", timestamp_time: {now: true}, userId_expr: "auth.uid"})
+}
+
+mutation UpdateMessage @auth(level: USER) {
+  message_update(key: {id: "00000000-0000-0000-0000-000000000000"}, data: {isRead: true})
+}
+
+mutation DeleteMessage @auth(level: USER) {
+  message_delete(key: {id: "00000000-0000-0000-0000-000000000000"})
+}
+
+query GetMessage @auth(level: USER) {
+  message(key: {id_expr: "auth.uid"}) {
+    content
+    timestamp
+  }
+}
+
+query ListMessages @auth(level: USER) {
+  messages(where: {userId: {eq_expr: "auth.uid"}}) {
+    content
+    senderEmail
+  }
+}
