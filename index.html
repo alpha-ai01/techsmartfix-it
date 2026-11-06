@@ -1,73 +1,85 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>IT Community Forum</title>
+    <link rel="manifest" href="/manifest.json">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-0000000000000000" crossorigin="anonymous"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { darkMode: 'class' };
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
-        .ad-placeholder { background: #f8fafc; border: 1px dashed #cbd5e1; display: flex; align-items: center; justify-content: center; min-height: 120px; color: #94a3b8; }
-        .pt-safe { padding-top: env(safe-area-inset-top); }
-        .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+        .glass { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); }
+        .dark .glass { background: rgba(30, 41, 59, 0.7); }
+        .ad-placeholder { min-height: 120px; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-900 pt-safe pb-safe">
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 transition-colors duration-300">
 
-    <!-- Mobile Header -->
-    <div class="md:hidden glass p-4 flex justify-between items-center sticky top-0 z-50 border-b border-slate-200">
-        <h1 class="text-xl font-bold text-blue-600"><i class="fas fa-laptop-code"></i> IT Forum</h1>
-        <button id="mobile-menu-toggle" class="p-2 w-11 h-11 flex items-center justify-center text-slate-600"><i class="fas fa-bars text-xl"></i></button>
-    </div>
-
-    <!-- Container -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        
-        <!-- Leaderboard Ad -->
-        <div class="mb-8">
-            <ins class="adsbygoogle ad-placeholder" style="display:block" data-ad-client="ca-pub-0000000000000000" data-ad-slot="1234567890" data-ad-format="horizontal"></ins>
-            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    <nav class="sticky top-0 z-50 glass border-b border-slate-200 dark:border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-blue-600">ITBoard</h1>
+            <div class="flex items-center space-x-3">
+                <button id="install-btn" class="hidden text-xs bg-green-600 text-white px-3 py-1 rounded">Install App</button>
+                <button onclick="toggleTheme()" class="p-2 rounded-lg bg-slate-200 dark:bg-slate-800"><i class="fas fa-sun dark:hidden"></i><i class="fas fa-moon hidden dark:block"></i></button>
+                <div id="auth-container"></div>
+            </div>
         </div>
+    </nav>
 
-        <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
-            
-            <!-- Left Sidebar (Desktop) -->
-            <aside class="hidden md:block md:col-span-3 lg:col-span-2">
-                <nav class="sticky top-24 space-y-2">
-                    <a href="#" class="block p-3 rounded-xl bg-blue-50 text-blue-700 font-semibold"><i class="fas fa-home w-6"></i> Home</a>
-                    <a href="#" class="block p-3 rounded-xl hover:bg-slate-100 text-slate-600 font-medium"><i class="fas fa-tag w-6"></i> Categories</a>
-                    <a href="#" class="block p-3 rounded-xl hover:bg-slate-100 text-slate-600 font-medium"><i class="fas fa-user w-6"></i> Profile</a>
-                </nav>
-            </aside>
+    <main class="max-w-7xl mx-auto px-4 py-6 grid md:grid-cols-12 gap-8">
+        <section class="md:col-span-8 space-y-6">
+            <div id="thread-feed" class="space-y-4"></div>
+            <button id="load-more" class="w-full p-3 bg-slate-200 dark:bg-slate-800 rounded-xl">Load More</button>
+        </section>
+        <aside class="hidden md:block md:col-span-4 sticky top-24 h-screen">
+             <ins class="adsbygoogle ad-placeholder" style="display:block" data-ad-client="ca-pub-0000000000000000" data-ad-slot="9998887776"></ins>
+        </aside>
+    </main>
 
-            <!-- Center Feed -->
-            <main class="md:col-span-9 lg:col-span-7 space-y-6">
-                <div id="thread-feed" class="space-y-4">
-                    <!-- Threads injected by JS -->
-                </div>
-            </main>
-
-            <!-- Right Sidebar (Desktop) -->
-            <aside class="hidden lg:block lg:col-span-3">
-                <div class="sticky top-24 space-y-6">
-                    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
-                        <h3 class="font-bold mb-4">Trending</h3>
-                        <p class="text-sm text-slate-500">No trends available.</p>
-                    </div>
-                    <!-- Skyscraper Ad -->
-                    <ins class="adsbygoogle ad-placeholder" style="display:block; min-height: 600px;" data-ad-client="ca-pub-0000000000000000" data-ad-slot="9998887776"></ins>
-                    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-                </div>
-            </aside>
-        </div>
-    </div>
-
-    <!-- Auth Modal & Firebase Script omitted for brevity (unchanged logic) -->
     <script type="module">
-        // Firebase Setup & Logic remains unchanged (imported/initialized as before)
-        // ... (Keep existing Firebase v12 initialization and functions) ...
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+        import { getFirestore, collection, query, orderBy, limit, startAfter, getDocs, doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-storage.js";
+
+        // ... Firebase Config and initialization ...
+        const firebaseConfig = { /* ... */ };
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+        
+        // ... Logic for authState, pagination, storage uploads ...
+
+        // PWA Install Prompt
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('install-btn').classList.remove('hidden');
+        });
+
+        document.getElementById('install-btn').addEventListener('click', () => {
+            deferredPrompt.prompt();
+        });
+
+        // Register Service Worker
+        if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');
+
+        // Theme Toggle
+        window.toggleTheme = () => {
+            document.documentElement.classList.toggle('dark');
+            localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+        };
     </script>
 </body>
 </html>
