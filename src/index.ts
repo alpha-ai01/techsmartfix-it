@@ -7,6 +7,19 @@ export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
 
+    if (url.pathname === '/ads.txt' && request.method === 'GET') {
+      return new Response(
+        'google.com, pub-3786655232838135, DIRECT, f08c47fec0942fa0\n',
+        {
+          status: 200,
+          headers: {
+            'Content-Type': 'text/plain; charset=utf-8',
+            'Cache-Control': 'public, max-age=3600',
+          },
+        }
+      );
+    }
+
     if (url.pathname === '/api/contact' && request.method === 'POST') {
       try {
         const body = await request.json() as { name?: string; email?: string; message?: string };

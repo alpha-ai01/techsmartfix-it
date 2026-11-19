@@ -2,7 +2,8 @@ const CACHE_NAME = 'it-board-v1';
 const ASSETS = [
   '/',
   '/index.html',
-  '/manifest.json'
+  '/manifest.json',
+  '/ads.txt'
 ];
 
 self.addEventListener('install', (e) => {
